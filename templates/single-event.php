@@ -8,6 +8,8 @@ while (have_posts()) {
     $formatted_date = events_manager_format_date($date);
     $place_encoded = $place ? rawurlencode($place) : '';
     $show_map = apply_filters('events_manager_show_map', true);
+    $api_key = EVENTS_MANAGER_YANDEX_API_KEY;
+    $use_api = !empty($api_key);
     ?>
     <article class="em-single-event">
         <?php if (has_post_thumbnail()): ?>
@@ -42,6 +44,9 @@ while (have_posts()) {
             <?php if ($place_encoded && $show_map): ?>
             <div class="em-single-event-map-wrap">
                 <h3 class="em-single-event-map-title">Место проведения</h3>
+                <?php if ($use_api): ?>
+                <div class="em-event-map em-map-api" data-address="<?php echo esc_attr($place); ?>" data-provider="yandex"></div>
+                <?php else: ?>
                 <div class="em-event-map">
                     <iframe
                         src="https://yandex.ru/maps/?text=<?php echo esc_attr($place_encoded); ?>"
@@ -52,6 +57,7 @@ while (have_posts()) {
                         loading="lazy"
                     ></iframe>
                 </div>
+                <?php endif; ?>
             </div>
             <?php endif; ?>
         </div>
