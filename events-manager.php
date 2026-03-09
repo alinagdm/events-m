@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: Events Manager
- * Description: Custom post type for events with shortcode and AJAX load more
+ * Plugin Name: Events Manager Demo
+ * Description:Events Manager plugin
  * Version: 1.0
  * Author: Alina Mikhaylova
  */
