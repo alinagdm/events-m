@@ -13,6 +13,7 @@ if (!defined('ABSPATH')) {
 define('EVENTS_MANAGER_VERSION', '1.0');
 define('EVENTS_MANAGER_PATH', plugin_dir_path(__FILE__));
 define('EVENTS_MANAGER_URL', plugin_dir_url(__FILE__));
+define('EVENTS_MANAGER_YANDEX_API_KEY', '02a13ed6-a264-4ee7-baca-ef4e91ef7307');
 
 class Events_Manager {
 
@@ -36,83 +37,6 @@ class Events_Manager {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_assets']);
         add_action('wp_ajax_events_load_more', [$this, 'ajax_load_more']);
         add_action('wp_ajax_nopriv_events_load_more', [$this, 'ajax_load_more']);
-        add_action('admin_menu', [$this, 'add_settings_page']);
-        add_action('admin_init', [$this, 'register_settings']);
-    }
-
-    public function add_settings_page() {
-        add_submenu_page(
-            'edit.php?post_type=' . $this->cpt_slug,
-            'Настройки карт',
-            'Настройки карт',
-            'manage_options',
-            'events-manager',
-            [$this, 'render_settings_page']
-        );
-    }
-
-    private function get_map_config() {
-        $key = defined('EVENTS_MANAGER_YANDEX_API_KEY') && EVENTS_MANAGER_YANDEX_API_KEY !== ''
-            ? EVENTS_MANAGER_YANDEX_API_KEY
-            : get_option('em_map_api_key', '');
-        $provider = defined('EVENTS_MANAGER_YANDEX_API_KEY') && EVENTS_MANAGER_YANDEX_API_KEY !== ''
-            ? 'yandex'
-            : get_option('em_map_provider', 'iframe');
-        return [$provider, $key];
-    }
-
-    public function register_settings() {
-        register_setting('events_manager', 'em_map_provider', [
-            'type' => 'string',
-            'default' => 'iframe',
-        ]);
-        register_setting('events_manager', 'em_map_api_key', [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-        ]);
-    }
-
-    public function render_settings_page() {
-        list($provider, $api_key) = $this->get_map_config();
-        $from_code = defined('EVENTS_MANAGER_YANDEX_API_KEY') && EVENTS_MANAGER_YANDEX_API_KEY !== '';
-        ?>
-        <div class="wrap">
-            <h1>Events Manager — карты</h1>
-            <?php if ($from_code): ?>
-            <p><em>API-ключ задан в коде плагина (EVENTS_MANAGER_YANDEX_API_KEY).</em></p>
-            <?php endif; ?>
-            <form method="post" action="options.php">
-                <?php settings_fields('events_manager'); ?>
-                <table class="form-table">
-                    <tr>
-                        <th scope="row">Провайдер карт</th>
-                        <td>
-                            <select name="em_map_provider" id="em_map_provider" <?php echo $from_code ? 'disabled' : ''; ?>>
-                                <option value="iframe" <?php selected($provider, 'iframe'); ?>>iframe (без API)</option>
-                                <option value="yandex" <?php selected($provider, 'yandex'); ?>>Яндекс.Карты API</option>
-                                <option value="google" <?php selected($provider, 'google'); ?>>Google Maps API</option>
-                                <option value="none" <?php selected($provider, 'none'); ?>>Отключить</option>
-                            </select>
-                            <?php if ($from_code): ?><input type="hidden" name="em_map_provider" value="yandex"><?php endif; ?>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">API-ключ</th>
-                        <td>
-                            <?php if ($from_code): ?>
-                            <input type="text" value="<?php echo esc_attr($api_key ? substr($api_key, 0, 8) . '...' : ''); ?>" class="regular-text" disabled>
-                            <p class="description">Ключ задан в events-manager.php</p>
-                            <?php else: ?>
-                            <input type="text" name="em_map_api_key" value="<?php echo esc_attr($api_key); ?>" class="regular-text">
-                            <p class="description">Нужен для Яндекс или Google. Либо укажи EVENTS_MANAGER_YANDEX_API_KEY в коде плагина.</p>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                </table>
-                <?php if (!$from_code) submit_button(); ?>
-            </form>
-        </div>
-        <?php
     }
 
     public function register_post_type() {
@@ -228,6 +152,8 @@ class Events_Manager {
 
     private function render_events_html($query) {
         ob_start();
+        $api_key = EVENTS_MANAGER_YANDEX_API_KEY;
+        $show_map = apply_filters('events_manager_show_map', true);
         if ($query->have_posts()) {
             while ($query->have_posts()) {
                 $query->the_post();
@@ -236,17 +162,15 @@ class Events_Manager {
                 $place = get_post_meta($post_id, 'event_place', true);
                 $formatted_date = $this->format_date_for_display($date);
                 $place_encoded = $place ? rawurlencode($place) : '';
-                $show_map = apply_filters('events_manager_show_map', true);
-                list($map_provider, $map_api_key) = $this->get_map_config();
-                $use_api = in_array($map_provider, ['yandex', 'google']) && !empty($map_api_key);
+                $use_api = !empty($api_key);
                 ?>
                 <article class="em-event" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <h3 class="em-event-title"><?php the_title(); ?></h3>
                     <div class="em-event-date"><?php echo esc_html($formatted_date); ?></div>
                     <div class="em-event-place"><?php echo esc_html($place); ?></div>
-                    <?php if ($place_encoded && $show_map && $map_provider !== 'none'): ?>
+                    <?php if ($place_encoded && $show_map): ?>
                     <?php if ($use_api): ?>
-                    <div class="em-event-map em-map-api" data-address="<?php echo esc_attr($place); ?>" data-provider="<?php echo esc_attr($map_provider); ?>"></div>
+                    <div class="em-event-map em-map-api" data-address="<?php echo esc_attr($place); ?>" data-provider="yandex"></div>
                     <?php else: ?>
                     <div class="em-event-map">
                         <iframe
@@ -286,14 +210,14 @@ class Events_Manager {
     public function enqueue_assets() {
         wp_register_style('events-manager', EVENTS_MANAGER_URL . 'assets/events-manager.css', [], EVENTS_MANAGER_VERSION);
         wp_register_script('events-manager', EVENTS_MANAGER_URL . 'assets/events-manager.js', [], EVENTS_MANAGER_VERSION, true);
-        list($map_provider, $map_api_key) = $this->get_map_config();
-        $use_map_api = in_array($map_provider, ['yandex', 'google']) && !empty($map_api_key);
+        $api_key = EVENTS_MANAGER_YANDEX_API_KEY;
+        $use_map_api = !empty($api_key);
         wp_localize_script('events-manager', 'eventsManager', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce($this->nonce_action),
             'action' => 'events_load_more',
-            'mapProvider' => $use_map_api ? $map_provider : '',
-            'mapApiKey' => $use_map_api ? $map_api_key : '',
+            'mapProvider' => $use_map_api ? 'yandex' : '',
+            'mapApiKey' => $use_map_api ? $api_key : '',
         ]);
     }
 
