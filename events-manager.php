@@ -75,7 +75,7 @@ class Events_Manager {
             'has_archive' => true,
             'hierarchical' => false,
             'menu_position' => 20,
-            'supports' => ['title', 'editor', 'thumbnail'],
+            'supports' => ['title', 'editor', 'excerpt', 'thumbnail'],
         ];
         register_post_type($this->cpt_slug, $args);
     }

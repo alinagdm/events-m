@@ -78,51 +78,123 @@
 }
 
 .em-single-event {
-    max-width: 800px;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 20px 0;
+    padding: 32px 20px 48px;
 }
 
 .em-single-event-thumb {
-    margin-bottom: 24px;
-    border-radius: 8px;
+    margin-bottom: 32px;
+    border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
 }
 
 .em-single-event-thumb img {
     display: block;
     width: 100%;
     height: auto;
+    max-height: 400px;
+    object-fit: cover;
+    vertical-align: top;
+}
+
+.em-single-event-body {
+    background: #fff;
 }
 
 .em-single-event-header {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #eee;
 }
 
 .em-single-event-title {
-    margin: 0 0 12px;
-    font-size: 2em;
+    margin: 0 0 16px;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #1a1a1a;
+}
+
+.em-single-event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 28px;
+    margin-bottom: 12px;
+}
+
+.em-single-event-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.em-single-event-meta-icon {
+    font-size: 1rem;
 }
 
 .em-single-event-date {
     font-weight: 600;
     color: #333;
-    margin-bottom: 8px;
 }
 
-.em-single-event-place {
+.em-single-event-excerpt {
+    margin-top: 12px;
+    font-size: 1.1rem;
+    line-height: 1.55;
     color: #555;
 }
 
 .em-single-event-content {
-    margin-bottom: 32px;
-    line-height: 1.6;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #333;
+}
+
+.em-single-event-content p {
+    margin: 0 0 1em;
+}
+
+.em-single-event-content p:last-child {
+    margin-bottom: 0;
+}
+
+.em-single-event-content h2,
+.em-single-event-content h3 {
+    margin: 1.5em 0 0.5em;
+    font-size: 1.25rem;
+}
+
+.em-single-event-content ul,
+.em-single-event-content ol {
+    margin: 0 0 1em;
+    padding-left: 1.5em;
+}
+
+.em-single-event-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
 }
 
 .em-single-event-map-wrap {
-    margin-top: 24px;
+    margin-top: 36px;
+    padding: 24px 0 0;
+    border-top: 1px solid #eee;
+}
+
+.em-single-event-map-title {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
 }
 
 .em-single-event-map-wrap .em-event-map {
-    border-radius: 8px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
 }

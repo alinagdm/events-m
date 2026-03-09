@@ -17,36 +17,50 @@ while (have_posts()) {
             <?php the_post_thumbnail('large'); ?>
         </div>
         <?php endif; ?>
-        <header class="em-single-event-header">
-            <h1 class="em-single-event-title"><?php the_title(); ?></h1>
-            <?php if ($formatted_date): ?>
-            <div class="em-single-event-date"><?php echo esc_html($formatted_date); ?></div>
-            <?php endif; ?>
-            <?php if ($place): ?>
-            <div class="em-single-event-place"><?php echo esc_html($place); ?></div>
-            <?php endif; ?>
-        </header>
-        <div class="em-single-event-content">
-            <?php the_content(); ?>
-        </div>
-        <?php if ($place_encoded && $show_map): ?>
-        <div class="em-single-event-map-wrap">
-            <?php if ($use_api): ?>
-            <div class="em-event-map em-map-api" data-address="<?php echo esc_attr($place); ?>" data-provider="yandex"></div>
-            <?php else: ?>
-            <div class="em-event-map">
-                <iframe
-                    src="https://yandex.ru/maps/?text=<?php echo esc_attr($place_encoded); ?>"
-                    width="100%"
-                    height="350"
-                    frameborder="0"
-                    allowfullscreen
-                    loading="lazy"
-                ></iframe>
+        <div class="em-single-event-body">
+            <header class="em-single-event-header">
+                <h1 class="em-single-event-title"><?php the_title(); ?></h1>
+                <div class="em-single-event-meta">
+                    <?php if ($formatted_date): ?>
+                    <span class="em-single-event-meta-item em-single-event-date">
+                        <span class="em-single-event-meta-icon">📅</span>
+                        <?php echo esc_html($formatted_date); ?>
+                    </span>
+                    <?php endif; ?>
+                    <?php if ($place): ?>
+                    <span class="em-single-event-meta-item em-single-event-place">
+                        <span class="em-single-event-meta-icon">📍</span>
+                        <?php echo esc_html($place); ?>
+                    </span>
+                    <?php endif; ?>
+                </div>
+                <?php if (has_excerpt()): ?>
+                <div class="em-single-event-excerpt"><?php the_excerpt(); ?></div>
+                <?php endif; ?>
+            </header>
+            <div class="em-single-event-content">
+                <?php the_content(); ?>
+            </div>
+            <?php if ($place_encoded && $show_map): ?>
+            <div class="em-single-event-map-wrap">
+                <h3 class="em-single-event-map-title">Место проведения</h3>
+                <?php if ($use_api): ?>
+                <div class="em-event-map em-map-api" data-address="<?php echo esc_attr($place); ?>" data-provider="yandex"></div>
+                <?php else: ?>
+                <div class="em-event-map">
+                    <iframe
+                        src="https://yandex.ru/maps/?text=<?php echo esc_attr($place_encoded); ?>"
+                        width="100%"
+                        height="350"
+                        frameborder="0"
+                        allowfullscreen
+                        loading="lazy"
+                    ></iframe>
+                </div>
+                <?php endif; ?>
             </div>
             <?php endif; ?>
         </div>
-        <?php endif; ?>
     </article>
     <?php
 }
