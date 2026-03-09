@@ -37,6 +37,17 @@ class Events_Manager {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_assets']);
         add_action('wp_ajax_events_load_more', [$this, 'ajax_load_more']);
         add_action('wp_ajax_nopriv_events_load_more', [$this, 'ajax_load_more']);
+        add_filter('template_include', [$this, 'single_event_template']);
+    }
+
+    public function single_event_template($template) {
+        if (is_singular($this->cpt_slug)) {
+            $plugin_template = EVENTS_MANAGER_PATH . 'templates/single-event.php';
+            if (file_exists($plugin_template)) {
+                return $plugin_template;
+            }
+        }
+        return $template;
     }
 
     public function register_post_type() {
@@ -114,14 +125,7 @@ class Events_Manager {
     }
 
     private function format_date_for_display($date_str) {
-        if (empty($date_str)) {
-            return '';
-        }
-        $date = date_create_from_format('Y-m-d', $date_str, wp_timezone());
-        if (!$date) {
-            return $date_str;
-        }
-        return $date->format('d.m.Y');
+        return events_manager_format_date($date_str);
     }
 
     private function get_events_query($paged = 1, $per_page = null) {
@@ -165,7 +169,7 @@ class Events_Manager {
                 $use_api = !empty($api_key);
                 ?>
                 <article class="em-event" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <h3 class="em-event-title"><?php the_title(); ?></h3>
+                    <h3 class="em-event-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
                     <div class="em-event-date"><?php echo esc_html($formatted_date); ?></div>
                     <div class="em-event-place"><?php echo esc_html($place); ?></div>
                     <?php if ($place_encoded && $show_map): ?>
@@ -210,6 +214,10 @@ class Events_Manager {
     public function enqueue_assets() {
         wp_register_style('events-manager', EVENTS_MANAGER_URL . 'assets/events-manager.css', [], EVENTS_MANAGER_VERSION);
         wp_register_script('events-manager', EVENTS_MANAGER_URL . 'assets/events-manager.js', [], EVENTS_MANAGER_VERSION, true);
+        if (is_singular($this->cpt_slug)) {
+            wp_enqueue_style('events-manager');
+            wp_enqueue_script('events-manager');
+        }
         $api_key = EVENTS_MANAGER_YANDEX_API_KEY;
         $use_map_api = !empty($api_key);
         wp_localize_script('events-manager', 'eventsManager', [
@@ -237,6 +245,17 @@ class Events_Manager {
             'next_page' => $page + 1,
         ]);
     }
+}
+
+function events_manager_format_date($date_str) {
+    if (empty($date_str)) {
+        return '';
+    }
+    $date = date_create_from_format('Y-m-d', $date_str, wp_timezone());
+    if (!$date) {
+        return $date_str;
+    }
+    return $date->format('d.m.Y');
 }
 
 function events_manager_init() {

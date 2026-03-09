@@ -22,6 +22,15 @@
     color: #1a1a1a;
 }
 
+.em-event-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.em-event-title a:hover {
+    text-decoration: underline;
+}
+
 .em-event-date {
     font-weight: 600;
     color: #333;
@@ -66,4 +75,54 @@
 .em-load-more:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+}
+
+.em-single-event {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.em-single-event-thumb {
+    margin-bottom: 24px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.em-single-event-thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.em-single-event-header {
+    margin-bottom: 24px;
+}
+
+.em-single-event-title {
+    margin: 0 0 12px;
+    font-size: 2em;
+}
+
+.em-single-event-date {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.em-single-event-place {
+    color: #555;
+}
+
+.em-single-event-content {
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.em-single-event-map-wrap {
+    margin-top: 24px;
+}
+
+.em-single-event-map-wrap .em-event-map {
+    border-radius: 8px;
 }
