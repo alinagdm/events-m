@@ -3,7 +3,7 @@
  * Plugin Name: Events Manager
  * Description: Custom post type for events with shortcode and AJAX load more
  * Version: 1.0
- * Author: Events Manager
+ * Author: Alina Mikhaylova
  */
 
 if (!defined('ABSPATH')) {
